@@ -4,7 +4,7 @@ const { processGuide } = require('./guideProcessor');
 function normalize(s) {
     return (s || '')
         .toLowerCase()
-        .replace(/[^\w\s]/g, ' ')
+        .replace(/[^\p{L}\p{N}\s]/gu, ' ') // Support for international characters (Unicode Letters & Numbers)
         .replace(/\s+/g, ' ')
         .trim();
 }
@@ -92,11 +92,18 @@ async function scrapeAndSaveGuide(db, url, locale, icon) {
             })
         }));
 
+        // Check for existing guide to preserve metadata
+        const existingGuide = await guidesCol.findOne({ name: guideName });
+        
+        // Preserve existing metadata if available, otherwise use new values
+        const finalLocale = (existingGuide && existingGuide.locale) ? existingGuide.locale : (locale || null);
+        const finalIcon = (existingGuide && existingGuide.icon) ? existingGuide.icon : (icon || null);
+
         const doc = {
             name: guideName,
             sourceUrl: url, // Store the source URL for cron jobs
-            locale: locale || null,
-            icon: icon || null,
+            locale: finalLocale,
+            icon: finalIcon,
             ordering: formattedOrdering,
             status: true,
             updatedAt: new Date()

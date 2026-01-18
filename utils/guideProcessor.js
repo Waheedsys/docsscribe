@@ -44,7 +44,7 @@ async function searchTitle(col, query, limit = 5) {
 function normalize(s) {
     return (s || '')
         .toLowerCase()
-        .replace(/[^\w\s]/g, ' ')
+        .replace(/[^\p{L}\p{N}\s]/gu, ' ') // Support for international characters (Unicode Letters & Numbers)
         .replace(/\s+/g, ' ')
         .trim();
 }

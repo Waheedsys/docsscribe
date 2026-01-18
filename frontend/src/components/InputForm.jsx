@@ -26,6 +26,7 @@ const InputForm = ({ title, endpoint, placeholder, exampleFormat }) => {
                 type: 'success',
                 message: response.data.message || 'Data uploaded successfully!'
             });
+            setInputData(''); // Clear the input field
             console.log('Success:', response.data);
         } catch (err) {
             console.error('Submission error:', err);

@@ -194,10 +194,17 @@ app.post('/api/full-guide-data', async (req, res) => {
         })
       }));
 
+      // Check for existing guide to preserve metadata
+      const existingGuide = await guidesCol.findOne({ name: guideName });
+
+      // Preserve existing metadata if available, otherwise use new values
+      const finalLocale = (existingGuide && existingGuide.locale) ? existingGuide.locale : (locale || null);
+      const finalIcon = (existingGuide && existingGuide.icon) ? existingGuide.icon : (icon || null);
+
       const doc = {
         name: guideName,
-        locale: locale || null, // Add locale
-        icon: icon || null,     // Add icon
+        locale: finalLocale, 
+        icon: finalIcon,     
         ordering: formattedOrdering,
         status: true,
         dateCreated: new Date()
